@@ -10,7 +10,6 @@
   };
   const mixcloudUrl = `https://api.mixcloud.com/${mixcloudCreds.username}/feed/?access_token=${mixcloudCreds.accessToken}`;
   function fetchNewShows() {
-
     fetch(mixcloudUrl)
     .then(response => response.json())
     .then(data => {
@@ -24,7 +23,6 @@
         thumbnail: firstInFeed.pictures.medium_mobile,
         logo: firstInFeed.user.pictures.large
       };
-
       if(newestEntry.key !== mixcloudObj.key && newestEntry.createTime !== mixcloudObj.createTime) {
         // There's a new entry
         // Check latest channel message to see if it's same as this entry
@@ -39,13 +37,11 @@
             }
             else if(!lastMessage.includes(newestEntry.url)) {
               console.log("MIXCLOUD: New show on Mixcloud, posting to channel now.");
-
               // Fetching the description for the Embed message
               fetch(`https://api.mixcloud.com${newestEntry.key}`)
                 .then(response => response.json())
                 .then(data => {
                   const newestEntryDescription = data.description;
-
                   // Create an embed
                   const mixcloudEmbed = new Discord.MessageEmbed()
                       .setColor('#111111')
@@ -56,13 +52,9 @@
                       // .setThumbnail(newestEntry.logo)
                       .setThumbnail(newestEntry.image)
                       .setTimestamp();
-
                   channel.send(`New show on Mixcloud: <${newestEntry.url}>`, { embed: mixcloudEmbed });
-
                 })
                 .catch(error => console.log(error.message));
-
-              // channel.send(`New show on Mixcloud: \n${newestEntry.url}`);
             }
           })
           .catch(console.err);
@@ -71,30 +63,15 @@
         mixcloudObj.key = newestEntry.key;
         mixcloudObj.createTime = newestEntry.createTime;
         mixcloudObj.url = newestEntry.url;
-
-        // Returns string
-        // console.log("New show on Mixcloud: " + newestEntry.url);
-        // bot.channels.fetch('<CHANNEL-ID>')
-        // .then(channel => {
-        //   channel.send(`New show on Mixcloud: \n${newestEntry.url}`);
-        // });
-
       }
       else {
         console.log("No new shows at this time.");
       }
-
-      // console.log(newestEntry.key);
-      // console.log(newestEntry.createTime);
-      // console.log(newestEntry.url);
     })
     .catch(error => console.log(error.message));
-
   };
   function runQueryMixcloud() {
     fetchNewShows();
-    // console.log("first interval");
     setInterval(fetchNewShows, 3600000); // Every hour, check if new show
-    // setInterval(() => {console.log("next interval");}, 3600000);
   }
   runQueryMixcloud();
