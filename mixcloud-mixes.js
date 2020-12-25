@@ -1,3 +1,10 @@
+ const Discord = require('discord.js'),
+      bot = new Discord.Client(),
+      fetch = require('node-fetch'),
+      token = '<TOKEN>',
+      channelId = '<CHANNEL-ID>';
+
+bot.on('ready', () => {
   // Posting new Mixcloud shows in channel
   const mixcloudCreds = {
     username: '<MIXCLOUD-USERNAME>',
@@ -27,7 +34,7 @@
         // There's a new entry
         // Check latest channel message to see if it's same as this entry
         // Heroku performs cycling on a daily basis, so this would prevent double posting
-        bot.channels.fetch('<CHANNEL-ID>')
+        bot.channels.fetch(channelId)
         .then(channel => {
           channel.messages.fetch({ limit: 1 })
           .then(messages => {
@@ -47,7 +54,7 @@
                       .setColor('#111111')
                       .setTitle(newestEntry.name)
                       .setURL(newestEntry.url)
-                      .setAuthor('Octopus Recordings')
+                      .setAuthor(mixcloudCreds.username)
                       .setDescription(newestEntryDescription)
                       // .setThumbnail(newestEntry.logo)
                       .setThumbnail(newestEntry.image)
@@ -75,3 +82,6 @@
     setInterval(fetchNewShows, 3600000); // Every hour, check if new show
   }
   runQueryMixcloud();
+}
+
+bot.login(token);
